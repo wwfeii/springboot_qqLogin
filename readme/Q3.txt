@@ -1,0 +1,101 @@
+http://9ynrxa.natappfree.cc/qqLoginCallback
+
+授权连接：
+回调地址 ：授权成功后,跳转到回调地址
+跳转到回调地址：传一些参数
+
+
+跳转到回调地址：
+传一个授权code有效期 10分钟  授权code使用完毕之后，直接删除，不能重复使用
+授权码的作用：使用授权码换取aess_token，使用aess_token换取openid
+
+openid作用: 唯一用户主键（授权系统会员主键，不代码腾讯userid）
+
+
+
+openid和我们用户表中存放一个openid进行关联
+
+使用openid调用腾讯会员接口查询QQ信息
+本地回调
+
+
+//步骤：
+①生成授权连接，需要配置回调地址
+
+https://graph.qq.com/oauth2.0/authorize?response_type=code&
+client_id=101420900&redirect_uri=http://127.0.0.1:8764/mobile/qqLoginCallback&
+state=1234656
+
+②通过授权码换取assessToken
+
+https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&
+client_id=101420900&client_secret=bd56a336f6ac49a65005595c2a41201a&code=E28F27AFC3D8A17B75F05E9661FB933E
+&redirect_uri=http://127.0.0.1:8764/mobile/qqLoginCallback	
+
+
+③使用assessToken换取openid
+https://graph.qq.com/oauth2.0/me?access_token=CF8775A510EA68ED8576C9F675B42862
+④使用openid和assessToken获取用户信息
+https://graph.qq.com/user/get_user_info?
+access_token=CF8775A510EA68ED8576C9F675B42862&
+oauth_consumer_key=12345&
+openid=537F314752DA3A491B4F66C04D6AD9FF
+
+
+
+
+
+
+具体操作步骤：
+
+将本地包导入maven仓库（cmd）:mvn install:install-file -Dfile=F:\jars\json-lib-2.4-jdk15.jar -DgroupId=net.sf.json-lib -DartifactId=json-lib -Dversion=2.4 -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
+
+准备工作：需要导入sdk.jar,修改qqConnection.properties文件（app_id app_key redirect_url）
+1.页面：href="authorizeUrl"
+2.对应后台
+@RequestMapping("/authorizeUrl")  //调转到qq授权页面
+public String authorizeUrl(HttpServletRequest request)throws QQConnectionException{
+	String authorizeUrl = new Oauth().getAuthorizeURL(request);
+	return "redirect:"+authorizeUrl
+
+}
+3.写回调路径 -- 需要和配置的回调路径一致(qqLoginCallBack)
+
+@Request("/qqLoginCallBack")
+public String qqloginCallBack(HttpServletRequest request){
+
+	//1>获取授权码(上面步骤回调中就带有了code)
+	//2>获取accessToken
+	//通过官方封装的API调用
+	AccessToken accessTokenObj = new Oauth().getAccessTokenByRequest(request);
+	String accessToken = accessTokenObj.getAccessToken();
+	if(Stringutils.isEmpty(accessToken)){
+		return setError(request,"QQ授权失败",ERROR);
+	}
+	OpenID openidObj = new OpenID(accessToken);
+	//3>获取openId
+	if(Stringutils.isEmpty(openidObj)){
+		return setError(request,"QQ授权失败",ERROR);//error表示授权失败后跳转的页面
+	}
+	String userOpenId = openidObj.getUserOpenId();
+	return userOpenId;
+	//4>数据库查找openid是否关联，如果没有关联需要跳转到关联页面，关联了就直接登录
+	带着openId去数据库查询，看是否授权--getUserByOpenId()..
+	然后保存cookie 或者redis 跳转到首页，展示用户信息
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
