@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: springboot-qqlogin
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: {author name}
+Implementation-Vendor-Id: com.tfyh
+Build-Jdk: 1.8.0_131
+Implementation-URL: http://projects.spring.io/spring-boot/springboot-q
+ qlogin/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+
