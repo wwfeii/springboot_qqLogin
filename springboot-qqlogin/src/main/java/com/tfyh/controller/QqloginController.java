@@ -1,7 +1,12 @@
 package com.tfyh.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,6 +18,7 @@ import com.qq.connect.api.qzone.UserInfo;
 import com.qq.connect.javabeans.AccessToken;
 import com.qq.connect.javabeans.qzone.UserInfoBean;
 import com.qq.connect.oauth.Oauth;
+import com.tfyh.util.ShaUtil;
 /**
  * 
  * @author wangfei
@@ -20,6 +26,16 @@ import com.qq.connect.oauth.Oauth;
  */
 @Controller
 public class QqloginController {
+	public static Logger logger = LoggerFactory.getLogger(QqloginController.class);
+	
+	@RequestMapping(value="/")
+	@ResponseBody
+	public String root(HttpServletRequest request){
+		String result = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>qq login</title></head><body><a href='http://wangfeifei.free.ngrok.cc/authorizeUrl'>qq第三方登陆</a><br><a href='http://wangfeifei.free.ngrok.cc/weixinlogin'>微信第三方登陆</a></body></html>";
+		return result;
+	}
+	
+	
 	/**
 	 * 重定向到qq授权页面
 	 * @param request
@@ -62,7 +78,8 @@ public class QqloginController {
 		//得到用户昵称
 		String nickname = userInfoBean.getNickname();
 		String imgUrl = userInfoBean.getAvatar().getAvatarURL30();
-		return "nickName="+nickname+"   imgUrl="+imgUrl;
+		String result = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>qq login</title></head><body>qq昵称："+nickname+"<br>qq头像:<img src='"+imgUrl+"'/></body></html>";
+		return result;
 	}
 	
 
