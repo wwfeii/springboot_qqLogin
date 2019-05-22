@@ -1,0 +1,3 @@
+# springboot_qqLogin
+基于springboot的qq，微信第三方登陆
+具体可看本项目中的readme文件夹下面的说明
